@@ -1,13 +1,20 @@
 {
+    "include": ["src/**/*", "src/**/*.jsx", "src/**/*.tsx"],
     "compilerOptions": {
-        "baseUrl": "./src",
+        "jsx": "react-jsx",
+        "target": "esnext",
+        "rootDir": "src",
+        "module": "esnext",
+        "strict": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "isolatedModules": true,
+        "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "skipLibCheck": true,
+        "lib": ["dom", "es2022"],
         "paths": {
-            "@/*": ["./*"]
+            "@/*": ["./src/*"]
         }
-    },
-    "files": [],
-    "references": [
-        { "path": "./tsconfig.app.json" },
-        { "path": "./tsconfig.node.json" }
-    ]
+    }
 }
