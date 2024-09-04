@@ -4,34 +4,36 @@ import { Link, NavLink } from 'react-router-dom';
 
 function Header() {
     return (
-        <div className="flex py-4 mx-10 ">
-            <Link
-                to={ROUTER_LINK.MAIN_PAGE}
-                className="text-black font-bold text-2xl"
-            >
-                graff.test
-            </Link>
-            <nav className="flex items-center justify-center w-full">
-                <ul className="flex gap-4">
-                    {HEADER_LINK.map((link) => {
-                        return (
-                            <li key={link.title} className="text-lg">
-                                <NavLink
-                                    to={link.url}
-                                    className={({ isActive }) =>
-                                        isActive
-                                            ? 'text-blue-1'
-                                            : 'hover:text-blue-2'
-                                    }
-                                >
-                                    {link.title}
-                                </NavLink>
-                            </li>
-                        );
-                    })}
-                </ul>
-            </nav>
-        </div>
+        <header className="border-gray-1 flex flex-col border-b">
+            <div className="mx-10 flex py-4">
+                <Link
+                    to={ROUTER_LINK.MAIN_PAGE}
+                    className="text-2xl font-bold text-black"
+                >
+                    graff.test
+                </Link>
+                <nav className="flex w-full items-center justify-center">
+                    <ul className="flex gap-4">
+                        {HEADER_LINK.map((link) => {
+                            return (
+                                <li key={link.title} className="text-lg">
+                                    <NavLink
+                                        to={link.url}
+                                        className={({ isActive }) =>
+                                            isActive
+                                                ? 'text-blue-1'
+                                                : 'hover:text-blue-2 transition-colors duration-200'
+                                        }
+                                    >
+                                        {link.title}
+                                    </NavLink>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                </nav>
+            </div>
+        </header>
     );
 }
 

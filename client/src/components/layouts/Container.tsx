@@ -8,10 +8,8 @@ interface IContainerProps {
 function Container({ children }: IContainerProps) {
     return (
         <>
-            <header className="flex flex-col border-b border-gray-1">
-                <Header />
-            </header>
-            {children}
+            <Header />
+            <main className="flex-auto">{children}</main>
         </>
     );
 }

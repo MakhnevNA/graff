@@ -4,7 +4,7 @@
 	height="100"
 	viewBox="0 0 100 100"
 	preserveAspectRatio="xMidYMid"
-	fill='#1c4595'
+	fill='currentColor'
 >
 	<g transform="translate(80,50)">
 	    <g transform="rotate(0)">

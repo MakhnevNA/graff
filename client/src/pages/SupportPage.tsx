@@ -1,9 +1,10 @@
 import Container from '@/components/layouts/Container';
+import SupportBody from '@/modules/Suppport/SupportBody';
 
 function SupportPage() {
     return (
         <Container>
-            <div>Поддержка</div>
+            <SupportBody />
         </Container>
     );
 }
