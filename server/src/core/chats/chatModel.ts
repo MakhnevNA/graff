@@ -1,17 +1,19 @@
-import { PROFILE } from '@/shared/constants';
+import { MessageType, PROFILE } from "../../shared/types";
 
-export interface IMessages {
+export interface IMessage {
     id: string;
     sender: PROFILE;
     text: string;
-    chat_id?: never | string;
 }
+
 export interface IClientName {
     name: string;
     surname: string;
 }
-export interface ITopicsItem {
+
+export interface IChat {
     id: string;
     client: IClientName;
-    messages: IMessages[];
+	messages: IMessage[];
+	type: MessageType
 }

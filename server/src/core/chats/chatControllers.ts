@@ -1,36 +1,87 @@
 import ChatService from './chatService';
-import { Request, Response } from 'express';
+import { CustomWebSocket, IMessage, MessageType, TWssType } from '../../services/websocketServer/types';
+import { broadcastMessage } from '../../utils/broadcastMessage';
 
 class ChatControllers {
-    async getAllChats(req: Request, res: Response): Promise<Response> {
-        try {
-            const allChats = await ChatService.getAllChats();
-            return res.json(allChats);
-		} catch (e) {
-			console.error(e);
-            return res
-                .status(500)
-                .json({ message: 'Не удалось получить чаты' });
-        }
+	private wss: TWssType;
+	private ws: CustomWebSocket;
+	
+	constructor(wss: TWssType, ws: CustomWebSocket) {
+		this.wss = wss;
+		this.ws = ws;
+	}
+	
+	async getAllChats() {
+
+		this.ws.on('message', async (message: IMessage) => {
+
+			message = JSON.parse(String(message))
+			const allChats = await ChatService.getAllChats()
+
+			switch (message.type) {	
+				case MessageType.CONNECTION: {
+					this.ws.send(JSON.stringify(allChats))
+					break
+				}
+				case MessageType.MESSAGE: {		
+					await broadcastMessage(this.wss, JSON.stringify(allChats), '', true)
+					break
+				}
+			}
+		});
     }
 
-    async getChat(req: Request, res: Response): Promise<Response> {
-        try {
-			const { chatId } = req.params;
+	async getChat() {
+
+		this.ws.on('message', async (message: IMessage) => {
+
+			message = JSON.parse(String(message));		
+			const { chatId, sender, text } = message;
+
+			this.ws.chatId = chatId
 
 			if (!chatId) {
-				return res.status(400).json({ message: 'id не указан' });
-			}		
-			
-            const chat = await ChatService.getChat(chatId);
-            return res.json(chat);
-		} catch (e) {
-			console.error(e);
-			return res
-				.status(500)
-				.json({ message: 'Не удалось получить чат' });
-        }
-    }
+				const reasonForClosure = JSON.stringify( {type: 'error', text: 'Не указан chatId'})
+				this.ws.close(1008, reasonForClosure)
+				return
+			}
+
+			switch (message.type) {
+				case MessageType.MESSAGE: {
+
+					if (!sender || !text) {
+						const reasonForClosure = JSON.stringify( {type: 'error', text: 'Не указан sender и/или text'})
+						this.ws.close(1008, reasonForClosure)
+						return 
+					}
+
+					const returnedMessage = await ChatService.sendMessage(chatId, text, sender);
+					
+					if (returnedMessage?.id) 
+						await broadcastMessage(this.wss, JSON.stringify(returnedMessage), chatId);
+                    
+					break
+				}
+
+				case MessageType.CONNECTION: {
+
+					const chat = await ChatService.getChat(chatId);
+					this.ws.send(JSON.stringify(chat));
+
+					break
+				}
+			}
+		});
+
+		this.ws.on('close', () => {
+			delete this.ws.chatId
+		})
+	}
+
 }
 
-export default new ChatControllers();
+export default ChatControllers;
+
+
+
+
